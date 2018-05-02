@@ -1,0 +1,336 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Uruchomienie &mdash; proxy  - dokumentacja</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Indeks"
+              href="genindex.html"/>
+        <link rel="search" title="Szukaj" href="search.html"/>
+    <link rel="top" title="proxy  - dokumentacja" href="index.html"/>
+        <link rel="prev" title="Welcome to proxy’s documentation!" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> proxy
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Uruchomienie</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">proxy</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Uruchomienie</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/how.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="uruchomienie">
+<h1>Uruchomienie<a class="headerlink" href="#uruchomienie" title="Stały odnośnik do tego nagłówka">¶</a></h1>
+<p>Uruchomienie poprzez:</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="fm">__init__</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>program wykonuje się dość długo, wybiera jedne adres proxy i wysyła do niego zlecenie odwiedziny strony z settings,
+która ECHOuje via PHP dane odebrane z servera proxy i zwraca do programu Pythona.
+Ten sprawdza, czy w otrzymanej treści jest adres IP (ustawiony w settings - tabela DB) oraz fraza «wiks» - która występuje na stronie.</p>
+<p>Pomyślny test, gdy NIE znaleziono IP oraz ZNALEZONO «wiks»</p>
+<p>Timeout dla jednego proxy to 30 sekund -ustawiane w settings.</p>
+<p>Wyniki w tabeli DB.</p>
+<p>Skrypt PHP pod adresem: <a class="reference external" href="http://www.wiks.eu/ip">http://www.wiks.eu/ip</a></p>
+<blockquote>
+<div><div class="highlight-php"><div class="highlight"><pre><span></span><span class="cp">&lt;?php</span>
+    <span class="sd">/** find IP</span>
+<span class="sd">     *</span>
+<span class="sd">     * @return type</span>
+<span class="sd">     */</span>
+    <span class="k">function</span> <span class="nf">getUserIP</span><span class="p">()</span> <span class="p">{</span>
+
+        <span class="nv">$client</span>  <span class="o">=</span> <span class="o">@</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;HTTP_CLIENT_IP&#39;</span><span class="p">];</span>
+        <span class="nv">$forward</span> <span class="o">=</span> <span class="o">@</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;HTTP_X_FORWARDED_FOR&#39;</span><span class="p">];</span>
+        <span class="nv">$remote</span>  <span class="o">=</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">&#39;REMOTE_ADDR&#39;</span><span class="p">];</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="nb">filter_var</span><span class="p">(</span><span class="nv">$client</span><span class="p">,</span> <span class="nx">FILTER_VALIDATE_IP</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nv">$ip</span> <span class="o">=</span> <span class="nv">$client</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">elseif</span><span class="p">(</span><span class="nb">filter_var</span><span class="p">(</span><span class="nv">$forward</span><span class="p">,</span> <span class="nx">FILTER_VALIDATE_IP</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nv">$ip</span> <span class="o">=</span> <span class="nv">$forward</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+            <span class="nv">$ip</span> <span class="o">=</span> <span class="nv">$remote</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nv">$ip</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nv">$user_ip</span> <span class="o">=</span> <span class="nx">getUserIP</span><span class="p">();</span>
+    <span class="nv">$stack_ips</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+    <span class="nv">$stack_rest</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+    <span class="k">foreach</span><span class="p">(</span><span class="nv">$_SERVER</span> <span class="k">as</span> <span class="nv">$key</span> <span class="o">=&gt;</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span> <span class="nb">filter_var</span><span class="p">(</span><span class="nv">$value</span><span class="p">,</span> <span class="nx">FILTER_VALIDATE_IP</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nv">$stack_ips</span><span class="p">[]</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+        <span class="p">}</span><span class="k">else</span><span class="p">{</span>
+            <span class="nv">$stack_rest</span><span class="p">[]</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span> <span class="nv">$value</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="cp">?&gt;</span><span class="x"></span>
+<span class="x">&lt;html&gt;</span>
+<span class="x">    &lt;head&gt;</span>
+<span class="x">        &lt;meta charset=&quot;UTF-8&quot;&gt;</span>
+<span class="x">        &lt;title&gt;</span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$user_ip</span><span class="p">;</span> <span class="cp">?&gt;</span><span class="x">&lt;/title&gt;</span>
+<span class="x">    &lt;/head&gt;</span>
+<span class="x">    &lt;body&gt;</span>
+<span class="x">        &lt;div id=&quot;container&quot;&gt;</span>
+<span class="x">    &lt;div id=&quot;main&quot;&gt;</span>
+<span class="x">        &lt;h1&gt;</span>
+<span class="x">        </span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="s1">&#39;IP: &#39;</span><span class="o">.</span><span class="nv">$user_ip</span><span class="p">;</span> <span class="cp">?&gt;</span><span class="x"></span>
+<span class="x">        &lt;/h1&gt;</span>
+<span class="x">        &lt;br&gt;</span>
+<span class="x">        &lt;table style=&quot;width: 100%; border: 1;&quot;&gt;</span>
+<span class="x">        </span><span class="cp">&lt;?php</span>
+        <span class="k">foreach</span><span class="p">(</span><span class="nv">$stack_ips</span> <span class="k">as</span> <span class="nv">$row</span><span class="p">)</span> <span class="p">{</span> <span class="cp">?&gt;</span><span class="x"></span>
+<span class="x">            &lt;tr&gt;</span>
+<span class="x">            &lt;td&gt;</span>
+<span class="x">            </span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x"></span>
+<span class="x">            &lt;/td&gt;</span>
+<span class="x">            &lt;td&gt;</span>
+<span class="x">            </span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="s1">&#39;&lt;strong&gt;&#39;</span><span class="o">.</span><span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">]</span><span class="o">.</span><span class="s1">&#39;&lt;/strong&gt;&#39;</span><span class="p">;</span> <span class="cp">?&gt;</span><span class="x"></span>
+<span class="x">            &lt;/td&gt;</span>
+<span class="x">            &lt;/tr&gt;</span>
+<span class="x">        </span><span class="cp">&lt;?php</span> <span class="p">}</span>
+        <span class="k">foreach</span><span class="p">(</span><span class="nv">$stack_rest</span> <span class="k">as</span> <span class="nv">$row</span><span class="p">)</span> <span class="p">{</span><span class="cp">?&gt;</span><span class="x"></span>
+<span class="x">            &lt;tr&gt;</span>
+<span class="x">            &lt;td&gt;</span>
+<span class="x">            </span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x"></span>
+<span class="x">            &lt;/td&gt;</span>
+<span class="x">            &lt;td&gt;</span>
+<span class="x">            </span><span class="cp">&lt;?php</span> <span class="k">echo</span> <span class="nv">$row</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">];</span> <span class="cp">?&gt;</span><span class="x"></span>
+<span class="x">            &lt;/td&gt;</span>
+<span class="x">            &lt;/tr&gt;</span>
+<span class="x">        </span><span class="cp">&lt;?php</span> <span class="p">}</span>
+        <span class="cp">?&gt;</span><span class="x"></span>
+<span class="x">        &lt;/table&gt;</span>
+<span class="x">    &lt;/div&gt;</span>
+<span class="x">        &lt;/div&gt;</span>
+<span class="x">    &lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<span class="target" id="module-__init__"></span><dl class="function">
+<dt id="__init__.main">
+<code class="descclassname">__init__.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/__init__.html#main"><span class="viewcode-link">[źródło]</span></a><a class="headerlink" href="#__init__.main" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>wykonuj pętlę główną programu (może trwać nawet 30sekund na jedno proxy, 50 minut na 100sztuk)
+wyniki są w DB, ustaw dostęp do DB w pliku creds_pattern.py i zmień jego nazwę na creds.py
+:return:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="__init__.only_value">
+<code class="descclassname">__init__.</code><code class="descname">only_value</code><span class="sig-paren">(</span><em>key</em>, <em>default=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/__init__.html#only_value"><span class="viewcode-link">[źródło]</span></a><a class="headerlink" href="#__init__.only_value" title="Stały odnośnik do tej definicji">¶</a></dt>
+<dd><p>pobierz z settings-DB i zwróć tylko wartość, jeśli nie występuje
+to zwróć default i taką też wpisz do DB
+:param key:
+:return:</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="index.html" class="btn btn-neutral" title="Welcome to proxy’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, WikS.eu.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/translations.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

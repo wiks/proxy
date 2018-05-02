@@ -1,0 +1,339 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>__init__ &mdash; proxy  - dokumentacja</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Indeks"
+              href="../genindex.html"/>
+        <link rel="search" title="Szukaj" href="../search.html"/>
+    <link rel="top" title="proxy  - dokumentacja" href="../index.html"/>
+        <link rel="up" title="Kod modułu" href="index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> proxy
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../how.html">Uruchomienie</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">proxy</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="index.html">Kod modułu</a> &raquo;</li>
+        
+      <li>__init__</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Kod źródłowy modułu __init__</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="c1"># import logging</span>
+<span class="kn">import</span> <span class="nn">bs4</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="kn">import</span> <span class="nn">wiks_comm</span>
+<span class="kn">import</span> <span class="nn">db_proxies</span>
+<span class="kn">import</span> <span class="nn">creds</span>
+
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">db_proxies</span><span class="o">.</span><span class="n">DeBe</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="only_value"><a class="viewcode-back" href="../how.html#__init__.only_value">[dokumenty]</a><span class="k">def</span> <span class="nf">only_value</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    pobierz z settings-DB i zwróć tylko wartość, jeśli nie występuje</span>
+<span class="sd">    to zwróć default i taką też wpisz do DB</span>
+<span class="sd">    :param key:</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">default</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_value_for_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">res</span> <span class="ow">and</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+        <span class="n">ret</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">default</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">set_value_for_key</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ret</span></div>
+
+
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../how.html#__init__.main">[dokumenty]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    wykonuj pętlę główną programu (może trwać nawet 30sekund na jedno proxy, 50 minut na 100sztuk)</span>
+<span class="sd">    wyniki są w DB, ustaw dostęp do DB w pliku creds_pattern.py i zmień jego nazwę na creds.py</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">set_value_for_key</span><span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
+    <span class="c1"># print only_value(&#39;start&#39;)</span>
+
+    <span class="c1"># -------- settings -------</span>
+
+    <span class="n">mytimeout</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">only_value</span><span class="p">(</span><span class="s1">&#39;mytimeout&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">))</span>
+    <span class="n">url_to_test</span> <span class="o">=</span> <span class="n">only_value</span><span class="p">(</span><span class="s1">&#39;url_ip&#39;</span><span class="p">,</span> <span class="n">creds</span><span class="o">.</span><span class="n">SETTINGS</span><span class="p">[</span><span class="s1">&#39;url_ip&#39;</span><span class="p">])</span>
+    <span class="n">ip_looking_for</span> <span class="o">=</span> <span class="n">only_value</span><span class="p">(</span><span class="s1">&#39;look_for_ip&#39;</span><span class="p">,</span> <span class="n">creds</span><span class="o">.</span><span class="n">SETTINGS</span><span class="p">[</span><span class="s1">&#39;look_for_ip&#39;</span><span class="p">])</span>
+
+    <span class="c1"># ------- go!</span>
+
+    <span class="n">wtdog_key</span> <span class="o">=</span> <span class="s1">&#39;proxy_check&#39;</span>
+    <span class="n">log_main</span> <span class="o">=</span> <span class="n">wiks_comm</span><span class="o">.</span><span class="n">setup_logger</span><span class="p">(</span><span class="s1">&#39;main&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;./log&#39;</span><span class="p">,</span> <span class="s1">&#39;debug.log&#39;</span><span class="p">))</span>  <span class="c1"># , logging.DEBUG)</span>
+    <span class="n">log_main</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;running &#39;</span> <span class="o">+</span> <span class="n">unicode</span><span class="p">(</span><span class="n">wtdog_key</span><span class="p">)</span> <span class="o">+</span> <span class="sa">u</span><span class="s1">&#39; ...&#39;</span><span class="p">)</span>
+
+    <span class="n">log_main</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;checking IP machine is: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">url_to_test</span><span class="p">)</span>
+    <span class="n">log_main</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;checking timeout is: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">mytimeout</span><span class="p">)</span>
+    <span class="n">log_main</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;looking for IP: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ip_looking_for</span><span class="p">)</span>
+
+    <span class="n">count_to_check</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="k">while</span> <span class="n">count_to_check</span><span class="p">:</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_number_of_not_tested_proxy</span><span class="p">()</span>
+        <span class="n">count_to_check</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="ow">and</span> <span class="s1">&#39;count_1&#39;</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+            <span class="n">count_to_check</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;count_1&#39;</span><span class="p">]</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">set_value_for_key</span><span class="p">(</span><span class="s1">&#39;count_to_check&#39;</span><span class="p">,</span> <span class="n">count_to_check</span><span class="p">)</span>
+
+        <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">hiddedip</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">page</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">httpProxy</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">timestart</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ua</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_one_random_user_agent</span><span class="p">()</span>
+            <span class="n">log_main</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;random pick one UserAgent: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">ua</span><span class="p">)</span>
+            <span class="n">webbrowser_headers</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;User-agent&#39;</span><span class="p">,</span> <span class="n">ua</span><span class="p">)</span>
+            <span class="n">httpProxy</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_one_random_proxy</span><span class="p">()</span>  <span class="c1"># {&#39;ipaddress&#39;: u&#39;53.149.171.103&#39;, &#39;port&#39;: 3128L}</span>
+            <span class="n">log_main</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;random pick one httpProxy from DB: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">httpProxy</span><span class="p">)</span>
+            <span class="n">ipport</span> <span class="o">=</span> <span class="s1">&#39;http://&#39;</span> <span class="o">+</span> <span class="n">httpProxy</span><span class="p">[</span><span class="s1">&#39;ipaddress&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">httpProxy</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">])</span>
+            <span class="n">log_main</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;testing proxy: </span><span class="si">%s</span><span class="s1">  --&gt; (to check left </span><span class="si">%s</span><span class="s1"> proxies)&#39;</span><span class="p">,</span> <span class="n">ipport</span><span class="p">,</span> <span class="n">count_to_check</span><span class="p">)</span>
+            <span class="n">proxyHandler</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">ProxyHandler</span><span class="p">({</span><span class="s1">&#39;http&#39;</span><span class="p">:</span> <span class="n">ipport</span><span class="p">})</span>
+            <span class="n">proxyOpener</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">build_opener</span><span class="p">(</span><span class="n">proxyHandler</span><span class="p">)</span>
+            <span class="n">urllib2</span><span class="o">.</span><span class="n">install_opener</span><span class="p">(</span><span class="n">proxyOpener</span><span class="p">)</span>
+            <span class="n">opener</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">build_opener</span><span class="p">(</span><span class="n">proxyHandler</span><span class="p">)</span>
+            <span class="n">urllib2</span><span class="o">.</span><span class="n">install_opener</span><span class="p">(</span><span class="n">opener</span><span class="p">)</span>
+            <span class="n">opener</span><span class="o">.</span><span class="n">addheaders</span> <span class="o">=</span> <span class="p">[</span><span class="n">webbrowser_headers</span><span class="p">]</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">opener</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">url_to_test</span><span class="p">,</span>
+                                   <span class="n">timeout</span><span class="o">=</span><span class="n">mytimeout</span><span class="p">)</span>
+            <span class="n">page</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timestart</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+            <span class="n">log_main</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;read PAGE, time: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">timeout</span> <span class="o">=</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span> <span class="o">-</span> <span class="n">timestart</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+            <span class="n">log_main</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;PAGE doesn`t read (time: </span><span class="si">%s</span><span class="s1"> ), error: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">put_proxy_exception2</span><span class="p">(</span><span class="n">httpProxy</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">page</span><span class="p">:</span>
+            <span class="n">soup</span> <span class="o">=</span> <span class="n">bs4</span><span class="o">.</span><span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="s2">&quot;lxml&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">soup</span><span class="p">:</span>
+                <span class="n">success</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">log_main</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;soup: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">unicode</span><span class="p">(</span><span class="n">soup</span><span class="p">))</span>
+            <span class="n">hiddedip</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># ok, nie było mojego IP a więc zostało ukryte</span>
+            <span class="n">resu</span> <span class="o">=</span> <span class="n">soup</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">ip_looking_for</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">resu</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">resu</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">hiddedip</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># nie ukrył --&gt; lipa</span>
+                <span class="n">log_main</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;my IP was found :-( &#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># check for something known on page</span>
+                <span class="n">resu2</span> <span class="o">=</span> <span class="n">soup</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;wiks&#39;</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">resu2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">resu2</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">log_main</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;an expected phrase is found and no my IP-addr. here :-) &#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">log_main</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">u</span><span class="s1">&#39;there wasn`t expected phrase on page&#39;</span><span class="p">)</span>
+                    <span class="n">success</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">put_result</span><span class="p">(</span><span class="n">success</span><span class="p">,</span> <span class="n">httpProxy</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">hiddedip</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="nb">print</span> <span class="p">(</span><span class="s1">&#39;start&#39;</span><span class="p">)</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, WikS.eu.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="../_static/translations.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
