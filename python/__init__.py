@@ -30,6 +30,19 @@ def only_value(key, default=None):
     return ret
 
 
+def determine_numbers_of_proxies_to_check():
+    """
+
+    :return:
+    """
+    res = db.get_number_of_not_tested_proxy()
+    count_to_check = 0
+    if res and 'count_1' in res:
+        count_to_check = res['count_1']
+        db.set_value_for_key('count_to_check', count_to_check)
+    return count_to_check  # = determine_numbers_of_proxies_to_check()
+
+
 def main():
     """
     wykonuj pętlę główną programu (może trwać nawet 30sekund na jedno proxy, 50 minut na 100sztuk)
@@ -51,18 +64,31 @@ def main():
     log_main = wiks_comm.setup_logger('main', os.path.join('./log', 'debug.log'))  # , logging.DEBUG)
     log_main.info(u'running ' + unicode(wtdog_key) + u' ...')
 
+    if ip_looking_for == '--your IP--':
+        response = urllib2.urlopen('http://www.wiks.eu/ip/myip.php')
+        ip_looking_for = response.read()
+        db.set_value_for_key('look_for_ip', ip_looking_for)
+        log_main.warning(u'none IP defined in "creds.py", determined: %s', ip_looking_for)
+
+    ua = db.get_one_random_user_agent()
+    if ua == 'Mozilla/5.0':
+        log_main.warning(u'put some user agents into "webbrowser_headers" table :-)')
+
+    if url_to_test == '--url to your-script php--':
+        log_main.warning(u'set URL for testing content returned by proxy server, e.q. like "http://www.wiks.eu/ip" :-)')
+
+    count_to_check = determine_numbers_of_proxies_to_check()
+    if not count_to_check:
+        log_main.warning(u'put some proxy`s data IP:port into table "all" columns: "ipaddress" & "port" to check it :-)')
+        exit()
+
     log_main.info(u'checking IP machine is: %s', url_to_test)
     log_main.info(u'checking timeout is: %s', mytimeout)
     log_main.info(u'looking for IP: %s', ip_looking_for)
 
-    count_to_check = -1
     while count_to_check:
 
-        res = db.get_number_of_not_tested_proxy()
-        count_to_check = 0
-        if res and 'count_1' in res:
-            count_to_check = res['count_1']
-            db.set_value_for_key('count_to_check', count_to_check)
+        count_to_check = determine_numbers_of_proxies_to_check()
 
         success = False
         hiddedip = None
@@ -71,6 +97,7 @@ def main():
         timestart = datetime.now()
         try:
             ua = db.get_one_random_user_agent()
+
             log_main.debug(u'random pick one UserAgent: %s', ua)
             webbrowser_headers = ('User-agent', ua)
             httpProxy = db.get_one_random_proxy()  # {'ipaddress': u'53.149.171.103', 'port': 3128L}
